@@ -1,0 +1,16 @@
+Use Case 1: Retrieve All Orders Placed by a Specific Customer
+MATCH (c:Customer {name: 'Protyusha Barua'})-[:PLACED]->(o:Order)
+RETURN c.name AS Customer, o.orderID AS OrderID, o.status AS Status, o.price AS TotalPrice;
+
+Use Case 2: Find Most Popular Menu Items Based on Orders
+MATCH (o:Order)-[:CONTAINS]->(m:MenuItem)
+RETURN m.description AS MenuItem, COUNT(o) AS NumberOfOrders
+ORDER BY NumberOfOrders DESC LIMIT 5;
+
+Use Case 3: Find Feedback Given by a Customer
+MATCH (c:Customer {name: 'Muzayed Imam'})-[:GAVE]->(f:CustomerFeedback)
+RETURN c.name AS Customer, f.feedback AS Feedback, f.rating AS Rating, f.resolutionStatus AS Status;
+
+Use Case 4: Find Orders That Used a Specific Promotion
+MATCH (o:Order)-[:USED]->(p:Promotion {offerDetails: '10% off on Vegan Items'})
+RETURN o.orderID AS OrderID, o.price AS TotalPrice, p.offerDetails AS Promotion;

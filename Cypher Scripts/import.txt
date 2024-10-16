@@ -1,0 +1,75 @@
+IMPORTING DATA
+
+CUSTOMER
+LOAD CSV WITH HEADERS FROM 'file:///customers.csv' AS row
+CREATE (:Customer {customerID: toInteger(row.CustomerID), name: row.Name, contactInfo: row.ContactInfo, preferences: row.Preferences});
+
+ORDER
+LOAD CSV WITH HEADERS FROM 'file:///orders.csv' AS row
+CREATE (:Order {orderID: toInteger(row.OrderID), status: row.Status, deliveryInfo: row.DeliveryInfo, price: toFloat(row.Price), quantity: toInteger(row.Quantity)});
+
+MENUITEM
+LOAD CSV WITH HEADERS FROM 'file:///menu_items.csv' AS row
+CREATE (:MenuItem {menuItemID: toInteger(row.MenuItemID), description: row.Description, price: toFloat(row.Price), availability: toBoolean(row.Availability)});
+
+FEEDBACK
+LOAD CSV WITH HEADERS FROM 'file:///feedback.csv' AS row
+CREATE (:CustomerFeedback {feedbackID: toInteger(row.FeedbackID), feedback: row.Feedback, rating: toInteger(row.Rating), resolutionStatus: row.ResolutionStatus});
+
+PROMOTIONS
+LOAD CSV WITH HEADERS FROM 'file:///promotions.csv' AS row
+CREATE (:Promotion {promoID: toInteger(row.PromoID), offerDetails: row.OfferDetails, validityPeriod: row.ValidityPeriod, eligibleItems: row.EligibleItems});
+
+
+RELATIONSHIPS
+1. LOAD CSV WITH HEADERS FROM 'file:///orders.csv' AS row
+MATCH (c:Customer {customerID: toInteger(row.CustomerID)})
+MATCH (o:Order {orderID: toInteger(row.OrderID)})
+CREATE (c)-[:PLACED]->(o);
+
+2. LOAD CSV WITH HEADERS FROM 'file:///feedback.csv' AS row
+MATCH (c:Customer {customerID: toInteger(row.CustomerID)})
+MATCH (f:CustomerFeedback {feedbackID: toInteger(row.FeedbackID)})
+CREATE (c)-[:GAVE]->(f);
+
+3. LOAD CSV WITH HEADERS FROM 'file:///promotions.csv' AS row
+MATCH (p:Promotion {promoID: toInteger(row.PromoID)})
+MATCH (m:MenuItem {description: row.EligibleItems})
+CREATE (p)-[:APPLIES_TO]->(m);
+
+4. // Create relationship for Order 101 and Promotion 402
+MATCH (o1:Order {orderID: 101}), (p1:Promotion {promoID: 402})
+CREATE (o1)-[:USED]->(p1);
+
+// Create relationship for Order 102 and Promotion 401
+MATCH (o2:Order {orderID: 102}), (p2:Promotion {promoID: 401})
+CREATE (o2)-[:USED]->(p2);
+
+// Skip Order 103, as it didn't use a promotion
+
+// Create relationship for Order 104 and Promotion 402
+MATCH (o4:Order {orderID: 104}), (p4:Promotion {promoID: 402})
+CREATE (o4)-[:USED]->(p4);
+
+5. // Create relationship for Order 101 and MenuItem 201 (Spicy Chicken Burger)
+MATCH (o1:Order {orderID: 101}), (m1:MenuItem {menuItemID: 201})
+CREATE (o1)-[:CONTAINS]->(m1);
+
+// Create relationship for Order 102 and MenuItem 202 (Vegan Salad)
+MATCH (o2:Order {orderID: 102}), (m2:MenuItem {menuItemID: 202})
+CREATE (o2)-[:CONTAINS]->(m2);
+
+// Create relationship for Order 103 and MenuItem 203 (Gluten-Free Pizza)
+MATCH (o3:Order {orderID: 103}), (m3:MenuItem {menuItemID: 203})
+CREATE (o3)-[:CONTAINS]->(m3);
+
+// Create relationship for Order 104 and MenuItem 204 (Grilled Chicken)
+MATCH (o4:Order {orderID: 104}), (m4:MenuItem {menuItemID: 204})
+CREATE (o4)-[:CONTAINS]->(m4);
+
+CREATING INDEX
+1. CREATE INDEX FOR (c:Customer) ON (c.customerID);
+2. CREATE INDEX FOR (o:Order) ON (o.orderID);
+3. CREATE INDEX FOR (m:MenuItem) ON (m.menuItemID);
+4. CREATE INDEX FOR (f:CustomerFeedback) ON (f.feedbackID);
+5. CREATE INDEX FOR (p:Promotion) ON (p.promoID); 

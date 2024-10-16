@@ -1,0 +1,5 @@
+﻿MenuItemID,Description,Price,Availability
+201,Spicy Chicken Burger,5.99,TRUE
+202,Vegan Salad,6.99,TRUE
+203,Gluten-Free Pizza,7.99,FALSE
+204,Grilled Chicken,8.5,TRUE

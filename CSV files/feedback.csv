@@ -1,0 +1,5 @@
+﻿FeedbackID,CustomerID,Feedback,Rating,ResolutionStatus
+301,1,Great food!,5,Resolved
+302,2,Loved the vegan salad!,4,Pending
+303,3,Sad about the pizza being unavailable,3,Resolved
+304,4,Good overall,4,Resolved
